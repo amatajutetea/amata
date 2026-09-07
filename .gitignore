@@ -9,10 +9,22 @@ out/
 build/
 
 # Local env files (secrets)
+.env
+.env*
 .env*.local
+*.env
 
-# Large media files (handled via hosting CDN / external URL)
+# Secret Keys & Credentials
+*key*.json
+*firebase*.json
+*secret*.json
+*.pem
+*.key
+*.csv
+rzp-test-key.csv
+amata_firebase_private_key.json
 
+# Archive files
 *.zip
 *.tar.gz
 
@@ -20,6 +32,7 @@ build/
 .DS_Store
 Thumbs.db
 
+# Project Markdown & Internal Specs
 integrations.md
 Amata_Combined_Policies.json
 performance.md
@@ -27,6 +40,3 @@ BlogsData.json
 firebase_setup_guide.md
 blog-updater.md
 audit.md
-amata_firebase_private_key.json
-*.csv
-rzp-test-key.csv

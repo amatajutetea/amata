@@ -1,13 +1,23 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '../../context/CartContext';
-import ComingSoonModal from '../ui/ComingSoonModal';
+import AuthModal from '../ui/AuthModal';
+import { auth } from '../../lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import styles from './Nav.module.css';
 
 export default function Nav({ theme = 'auto' }) {
-  const { count, setIsOpen, currency, setCurrency, lang, setLang } = useCart();
+  const { count, setIsOpen, lang, setLang } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [comingSoonModal, setComingSoonModal] = useState({ open: false, type: 'checkout', title: '' });
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Close menu on route change / resize
   useEffect(() => {
@@ -21,10 +31,6 @@ export default function Nav({ theme = 'auto' }) {
     document.body.style.overflow = menuOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
-
-  const openComingSoon = (type, title) => {
-    setComingSoonModal({ open: true, type, title });
-  };
 
   return (
     <>
@@ -46,13 +52,14 @@ export default function Nav({ theme = 'auto' }) {
           </div>
           <Link href="/learn" className={styles.link}>{lang === 'JP' ? '学ぶ' : 'Learn'}</Link>
           <Link href="/journal" className={styles.link}>{lang === 'JP' ? 'ジャーナル' : 'Journal'}</Link>
-          
+          <Link href="/track" className={styles.link}>{lang === 'JP' ? '追跡' : 'Track Order'}</Link>
+
           <button
             className={styles.link}
-            onClick={() => openComingSoon('login', 'User Login Coming Soon')}
+            onClick={() => setAuthModalOpen(true)}
             aria-label="Account Login"
           >
-            {lang === 'JP' ? 'ログイン' : 'Login'} <span className={styles.badgeSoon}>Soon</span>
+            {user ? (lang === 'JP' ? 'プロフィール' : 'Profile') : (lang === 'JP' ? 'ログイン' : 'Login')}
           </button>
 
           <a
@@ -102,11 +109,12 @@ export default function Nav({ theme = 'auto' }) {
           <Link href="/" className={styles.drawerLink} onClick={() => setMenuOpen(false)}>Home</Link>
           <Link href="/learn" className={styles.drawerLink} onClick={() => setMenuOpen(false)}>Learn</Link>
           <Link href="/journal" className={styles.drawerLink} onClick={() => setMenuOpen(false)}>Journal</Link>
+          <Link href="/track" className={styles.drawerLink} onClick={() => setMenuOpen(false)}>Track Order</Link>
           <button
             className={styles.drawerLink}
-            onClick={() => { setMenuOpen(false); openComingSoon('login', 'User Login Coming Soon'); }}
+            onClick={() => { setMenuOpen(false); setAuthModalOpen(true); }}
           >
-            Login <span className={styles.badgeSoon}>Soon</span>
+            {user ? 'Profile' : 'Login'}
           </button>
 
           <a
@@ -128,7 +136,7 @@ export default function Nav({ theme = 'auto' }) {
           </button>
         </nav>
         <div className={styles.drawerTagline}>
-          <span>जूट चाय · ジュートティー</span>
+          <span>जू特茶 · ジュートティー</span>
         </div>
       </div>
 
@@ -137,14 +145,14 @@ export default function Nav({ theme = 'auto' }) {
         <div className={styles.backdrop} onClick={() => setMenuOpen(false)} aria-hidden="true" />
       )}
 
-      {/* Coming Soon Modal */}
-      <ComingSoonModal
-        isOpen={comingSoonModal.open}
-        onClose={() => setComingSoonModal({ ...comingSoonModal, open: false })}
-        title={comingSoonModal.title}
-        type={comingSoonModal.type}
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        user={user}
       />
     </>
   );
 }
+
 

@@ -29,8 +29,8 @@ export default function ComingSoonModal({ isOpen, onClose, title = "Direct Check
 
         <p className={styles.message}>
           {type === 'login'
-            ? 'User authentication & customer accounts are currently under process. You can explore our organic Moroheiya infusions directly.'
-            : 'Payment gateway integration and shipping infrastructure are currently under active development. Direct web checkout will be online shortly.'}
+            ? 'User authentication & customer accounts are active. Sign in with Google or Email to save your shipping details and track orders.'
+            : 'Direct payment & shipping gateways are active. You can check out directly on our website or purchase via Amazon.'}
         </p>
 
         <div className={styles.amazonCard}>

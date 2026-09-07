@@ -53,7 +53,7 @@ function ProductCard({ product }) {
           disabled={!product.inStock}
           style={!product.inStock ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
         >
-          {product.inStock ? 'Add' : 'Out'}
+          {product.inStock ? 'Add to Satchel Bag' : 'Out of Stock'}
         </button>
       </div>
     </div>

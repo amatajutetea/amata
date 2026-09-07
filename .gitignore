@@ -27,3 +27,6 @@ BlogsData.json
 firebase_setup_guide.md
 blog-updater.md
 audit.md
+amata_firebase_private_key.json
+*.csv
+rzp-test-key.csv

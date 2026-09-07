@@ -2,18 +2,41 @@ import admin from 'firebase-admin';
 
 if (!admin.apps.length) {
   try {
-    admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        // Replace escaped newlines for private key
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    });
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+
+    if (clientEmail && privateKey && !clientEmail.includes('xxxxx')) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+          clientEmail,
+          privateKey,
+        }),
+      });
+    }
   } catch (error) {
-    console.error('Firebase admin initialization error', error.stack);
+    console.error('Firebase admin initialization error:', error.message);
   }
 }
 
-export const adminAuth = admin.auth();
-export const adminDb = admin.firestore();
+let authObj = null;
+let dbObj = null;
+
+try {
+  if (admin.apps.length) {
+    authObj = admin.auth();
+  }
+} catch (e) {
+  console.warn('[adminAuth init warning]:', e.message);
+}
+
+try {
+  if (admin.apps.length) {
+    dbObj = admin.firestore();
+  }
+} catch (e) {
+  console.warn('[adminDb init warning]:', e.message);
+}
+
+export const adminAuth = authObj;
+export const adminDb = dbObj;

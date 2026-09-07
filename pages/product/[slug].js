@@ -150,7 +150,7 @@ export default function ProductPage({ product }) {
           </div>
 
           <div className={styles.noticeBanner}>
-            <span>⚡</span> Direct payment & shipping gateways are currently under development. Order on Amazon for fast delivery!
+            <span>⚡</span> Direct payment & shipping active. You can also order directly on Amazon!
           </div>
 
           <div className={styles.ctaRow}>

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.1",
     "@phosphor-icons/react": "^2.1.7",
     "@studio-freight/lenis": "^1.0.39",
     "firebase": "^10.12.4",

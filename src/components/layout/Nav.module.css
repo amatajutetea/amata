@@ -96,9 +96,14 @@
   letter-spacing: 2px;
   position: relative;
   overflow: hidden;
-  transition: letter-spacing 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  font-weight: 400;
+  transition: color 0.3s ease, font-weight 0.2s ease;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: inherit;
 }
-.link:hover { letter-spacing: 5px; }
+.link:hover { color: var(--c-sand); font-weight: 600; cursor: pointer; }
 
 /* difference blend-mode nav (for pages with dark bg at top) */
 .blend {
@@ -237,9 +242,13 @@
   display: block;
   width: fit-content;
   opacity: 0.85;
-  transition: opacity 0.3s, letter-spacing 0.4s;
+  font-weight: 400;
+  transition: opacity 0.3s, color 0.3s ease, font-weight 0.2s ease;
+  cursor: pointer;
+  background: transparent;
+  border: none;
 }
-.drawerLink:hover { opacity: 1; letter-spacing: 0.02em; }
+.drawerLink:hover { opacity: 1; color: var(--c-sand); font-weight: 600; cursor: pointer; }
 
 .drawerCartBtn {
   display: flex;

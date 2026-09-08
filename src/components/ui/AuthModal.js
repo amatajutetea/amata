@@ -8,7 +8,8 @@ import {
   createUserWithEmailAndPassword,
   signOut
 } from 'firebase/auth';
-import { X, Package, ArrowRight } from '@phosphor-icons/react';
+import { X, Package, ArrowRight, WarningCircle } from '@phosphor-icons/react';
+import OrderIssueModal from './OrderIssueModal';
 import styles from './ComingSoonModal.module.css';
 
 export default function AuthModal({ isOpen, onClose, user }) {
@@ -21,6 +22,9 @@ export default function AuthModal({ isOpen, onClose, user }) {
 
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+
+  const [issueModalOpen, setIssueModalOpen] = useState(false);
+  const [selectedOrderForIssue, setSelectedOrderForIssue] = useState(null);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
@@ -170,23 +174,47 @@ export default function AuthModal({ isOpen, onClose, user }) {
                         {ord.items ? ord.items.map((i) => i.name).join(', ') : 'Amata Infusion'} · ₹{ord.amount?.toFixed(2)}
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => handleTrackClick(ord.orderId)}
-                        className="amata-btn amata-btn--sand"
-                        style={{
-                          width: '100%',
-                          padding: '0.55rem',
-                          fontSize: '0.82rem',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '0.4rem',
-                        }}
-                      >
-                        <span>Track Shipment Live</span>
-                        <ArrowRight size={14} />
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.6rem' }}>
+                        <button
+                          type="button"
+                          onClick={() => handleTrackClick(ord.orderId)}
+                          className="amata-btn amata-btn--sand"
+                          style={{
+                            flex: 1,
+                            padding: '0.55rem',
+                            fontSize: '0.8rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.3rem',
+                          }}
+                        >
+                          <span>Track Live</span>
+                          <ArrowRight size={14} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedOrderForIssue(ord);
+                            setIssueModalOpen(true);
+                          }}
+                          style={{
+                            padding: '0.55rem 0.75rem',
+                            fontSize: '0.78rem',
+                            border: '1px solid rgba(0,0,0,0.15)',
+                            background: '#ffffff',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.3rem',
+                            color: '#555',
+                          }}
+                        >
+                          <WarningCircle size={14} />
+                          <span>Help / Cancel</span>
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -309,6 +337,13 @@ export default function AuthModal({ isOpen, onClose, user }) {
           </div>
         )}
       </div>
+
+      <OrderIssueModal
+        isOpen={issueModalOpen}
+        onClose={() => setIssueModalOpen(false)}
+        orderId={selectedOrderForIssue?.orderId}
+        orderStatus={selectedOrderForIssue?.status}
+      />
     </>
   );
 }

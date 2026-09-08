@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Layout from '../src/components/layout/Layout';
+import OrderIssueModal from '../src/components/ui/OrderIssueModal';
+import { WarningCircle } from '@phosphor-icons/react';
 import styles from '../src/styles/checkout.module.css';
 
 export default function TrackPage() {
@@ -11,6 +13,7 @@ export default function TrackPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [issueModalOpen, setIssueModalOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -133,8 +136,8 @@ export default function TrackPage() {
                 {result.tracking?.remarks || 'Your shipment has been created and is being prepared for pickup by Delhivery.'}
               </p>
               
-              {result.waybill && result.waybill !== 'pending_dispatch' && (
-                <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+              <div style={{ marginTop: '1.5rem', textAlign: 'center', display: 'flex', gap: '0.8rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                {result.waybill && result.waybill !== 'pending_dispatch' && (
                   <a
                     href={`https://www.delhivery.com/track/package/${result.waybill}`}
                     target="_blank"
@@ -144,8 +147,29 @@ export default function TrackPage() {
                   >
                     View Official Delhivery Live Map ↗
                   </a>
-                </div>
-              )}
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setIssueModalOpen(true)}
+                  style={{
+                    padding: '0.75rem 1.2rem',
+                    border: '1px solid rgba(0,0,0,0.15)',
+                    borderRadius: '4px',
+                    background: '#ffffff',
+                    color: '#444',
+                    fontSize: '0.88rem',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.4rem'
+                  }}
+                >
+                  <WarningCircle size={16} />
+                  <span>Facing problems with your order?</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -156,6 +180,13 @@ export default function TrackPage() {
           </Link>
         </div>
       </div>
+
+      <OrderIssueModal
+        isOpen={issueModalOpen}
+        onClose={() => setIssueModalOpen(false)}
+        orderId={result?.order?.orderId || result?.queryId || queryInput}
+        orderStatus={result?.order?.status}
+      />
     </Layout>
   );
 }

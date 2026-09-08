@@ -20,7 +20,9 @@ export default async function handler(req, res) {
   const verifiedItems = [];
 
   for (const item of items) {
-    const product = productsData.find((p) => p.id === item.id || p.slug === item.slug);
+    const product = productsData.find(
+      (p) => p.id === item.id || p.slug === item.slug || (item.id && item.id.startsWith(p.id))
+    );
     if (!product) {
       return res.status(400).json({ error: `Product not found: ${item.name || item.id}` });
     }

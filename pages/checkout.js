@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Script from 'next/script';
 import Layout from '../src/components/layout/Layout';
 import { useCart } from '../src/context/CartContext';
 import styles from '../src/styles/checkout.module.css';
@@ -12,6 +13,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [placedOrderInfo, setPlacedOrderInfo] = useState(null);
   const [user, setUser] = useState(null);
+  const [pincodeStatus, setPincodeStatus] = useState(null);
 
   const [form, setForm] = useState({
     name: '',
@@ -23,6 +25,41 @@ export default function CheckoutPage() {
     pincode: '',
     country: 'India',
   });
+
+  // Auto-lookup city & state when a 6-digit Indian pincode is entered
+  useEffect(() => {
+    const cleanPin = form.pincode.trim().replace(/\D/g, '');
+    if (cleanPin.length === 6) {
+      let isMounted = true;
+      setPincodeStatus('Looking up pincode...');
+      fetch(`https://api.postalpincode.in/pincode/${cleanPin}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (!isMounted) return;
+          if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice?.length > 0) {
+            const po = data[0].PostOffice[0];
+            const detectedCity = po.District || po.Block || po.Name;
+            const detectedState = po.State;
+            setForm((prev) => ({
+              ...prev,
+              city: detectedCity || prev.city,
+              state: detectedState || prev.state,
+            }));
+            setPincodeStatus(`✓ Auto-filled: ${detectedCity}, ${detectedState}`);
+          } else {
+            setPincodeStatus(null);
+          }
+        })
+        .catch(() => {
+          if (isMounted) setPincodeStatus(null);
+        });
+      return () => {
+        isMounted = false;
+      };
+    } else {
+      setPincodeStatus(null);
+    }
+  }, [form.pincode]);
 
   // Fetch user profile if logged in to pre-fill shipping address
   useEffect(() => {
@@ -229,6 +266,7 @@ export default function CheckoutPage() {
 
   return (
     <Layout title="Amata | Direct Checkout" hideFooter>
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <div className={styles.page}>
         <div className={styles.formCol}>
           <div className={styles.stepsBreadcrumb}>
@@ -319,6 +357,11 @@ export default function CheckoutPage() {
                   placeholder="700001"
                   required
                 />
+                {pincodeStatus && (
+                  <span style={{ fontSize: '0.78rem', color: pincodeStatus.startsWith('✓') ? '#2e7d32' : '#888', marginTop: '0.3rem', display: 'block' }}>
+                    {pincodeStatus}
+                  </span>
+                )}
               </div>
               <div className={styles.field}>
                 <label>Country</label>

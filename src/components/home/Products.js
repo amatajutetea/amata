@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart, formatPrice } from '../../context/CartContext';
@@ -6,7 +6,15 @@ import styles from './Products.module.css';
 
 function ProductCard({ product }) {
   const { addItem, currency, lang } = useCart();
+  const [added, setAdded] = useState(false);
   const cardRef = useRef(null);
+
+  const handleAdd = () => {
+    if (!product.inStock) return;
+    addItem(product);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1800);
+  };
 
   return (
     <div ref={cardRef} className={styles.card}>
@@ -49,11 +57,11 @@ function ProductCard({ product }) {
         </a>
         <button
           className={`amata-btn amata-btn--sand ${styles.addBtn}`}
-          onClick={() => product.inStock && addItem(product)}
+          onClick={handleAdd}
           disabled={!product.inStock}
           style={!product.inStock ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
         >
-          {product.inStock ? 'Add to Satchel Bag' : 'Out of Stock'}
+          {added ? 'Added ✓' : (product.inStock ? 'Add to Satchel Bag' : 'Out of Stock')}
         </button>
       </div>
     </div>

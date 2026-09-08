@@ -24,7 +24,6 @@ export default function Document() {
           }}
         />
         <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
-        <script src="https://checkout.razorpay.com/v1/checkout.js" async defer></script>
       </Head>
       <body>
         <div id="google_translate_element" style={{ display: 'none' }}></div>

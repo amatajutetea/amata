@@ -55,6 +55,8 @@ export default function ProductPage({ product }) {
   const currentPrice = selectedSizeInfo.price;
   const isAvailable = selectedSizeInfo.inStock && product.inStock;
 
+  const [added, setAdded] = useState(false);
+
   const handleAddToCart = () => {
     if (!isAvailable) return;
     addItem({
@@ -65,6 +67,8 @@ export default function ProductPage({ product }) {
       weight: `${selectedSize * 2}g (${selectedSize} bags x 2g)`,
       servings: selectedSize
     });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1800);
   };
 
   const productSchema = {
@@ -170,7 +174,7 @@ export default function ProductPage({ product }) {
               disabled={!isAvailable}
               style={!isAvailable ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
             >
-              {isAvailable ? 'Add to Satchel Bag' : 'Out of Stock'}
+              {added ? 'Added ✓' : (isAvailable ? 'Add to Satchel Bag' : 'Out of Stock')}
             </button>
           </div>
 

@@ -60,7 +60,16 @@ export default function Hero() {
 
   return (
     <section ref={sectionRef} className={styles.hero}>
-      <video src="/videos/hero.mp4" className={styles.bgVideo} autoPlay muted loop playsInline />
+      <video
+        src="/videos/hero.mp4"
+        className={styles.bgVideo}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster="/images/Corchorus_olitorius.jpg"
+      />
       <div className={styles.overlay} />
 
       <MandalaDecor className={styles.mandala} />

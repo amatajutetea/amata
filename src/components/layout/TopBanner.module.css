@@ -1,0 +1,61 @@
+.topBanner {
+  width: 100%;
+  background: linear-gradient(90deg, #0a2d33 0%, #15454d 50%, #0a2d33 100%);
+  color: var(--c-sand, #ead39d);
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(234, 211, 157, 0.25);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 10002;
+  position: relative;
+}
+
+.sparkle {
+  font-size: 0.85rem;
+  animation: pulseSparkle 2s infinite ease-in-out;
+}
+
+.mainText {
+  color: var(--c-white, #ffffff);
+  opacity: 0.9;
+}
+
+.highlightText {
+  color: var(--c-sand, #ead39d);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 12px rgba(234, 211, 157, 0.4);
+}
+
+.subText {
+  color: var(--c-white, #ffffff);
+  opacity: 0.75;
+  font-size: 0.7rem;
+  font-weight: 400;
+  text-transform: none;
+}
+
+@keyframes pulseSparkle {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@media (max-width: 640px) {
+  .topBanner {
+    font-size: 0.68rem;
+    padding: 0.4rem 0.6rem;
+    gap: 0.35rem;
+  }
+  .subText {
+    display: none;
+  }
+}

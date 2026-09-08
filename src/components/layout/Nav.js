@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '../../context/CartContext';
 import AuthModal from '../ui/AuthModal';
+import TopBanner from './TopBanner';
 import { auth } from '../../lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import styles from './Nav.module.css';
@@ -34,7 +35,9 @@ export default function Nav({ theme = 'auto' }) {
 
   return (
     <>
-      <nav className={`${styles.nav} ${styles[theme] || ''}`}>
+      <header className={styles.headerFixed}>
+        <TopBanner />
+        <nav className={`${styles.nav} ${styles[theme] || ''}`}>
         <Link href="/" className={styles.logo}>
           <div className={styles.logoContainer}>
             <img src="/images/crane_logo.png" alt="Amata Crane Logo" className={`${styles.logoImg} ${styles.logo1}`} />
@@ -102,6 +105,7 @@ export default function Nav({ theme = 'auto' }) {
           <span className={`${styles.bar} ${menuOpen ? styles.barBot : ''}`} />
         </button>
       </nav>
+    </header>
 
       {/* Mobile drawer */}
       <div className={`${styles.drawer} ${menuOpen ? styles.drawerOpen : ''}`} aria-hidden={!menuOpen}>

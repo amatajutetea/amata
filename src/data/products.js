@@ -7,7 +7,7 @@ const products = [
     slug: "ginger-moroheiya-infusion",
     name: "Ginger Moroheiya Infusion",
     nameJp: "生姜モロヘイヤ茶",
-    price: 378,
+    price: 499,
     currency: "INR",
     primaryImage: "/images/products/ginger/ginger.jpg",
     hoverImage: "/images/products/ginger/2.jpeg",
@@ -32,14 +32,13 @@ const products = [
     ],
     brewing:
       "Steep 1 tea bag in 200ml fresh water at 80°C (176°F) for 3-5 minutes. Perfect as a morning warming ritual or an iced summer refresh.",
-    weight: "48g (24 bags x 2g)",
+    weight: "60g (24 sachets x 2.5g)",
     servings: 24,
     certifications: ["BMQ Organic certified", "JAS Certified", "India Organic"],
     inStock: true,
     featured: true,
     sizes: [
-      { pieces: 12, inStock: false, price: 210 },
-      { pieces: 24, inStock: true, price: 378 }
+      { pieces: 24, inStock: true, price: 499 }
     ]
   },
   {
@@ -47,7 +46,7 @@ const products = [
     slug: "elaichi-moroheiya-infusion",
     name: "Elaichi Moroheiya Infusion",
     nameJp: "エライチモロヘイヤ茶",
-    price: 378,
+    price: 499,
     currency: "INR",
     primaryImage: "/images/products/elaichi/elaichi.jpg",
     hoverImage: "/images/products/elaichi/2.jpeg",
@@ -72,14 +71,13 @@ const products = [
     ],
     brewing:
       "Steep 1 tea bag in 200ml hot water at 80°C (176°F) for 4-5 minutes. Exceptional as a grounding evening wind-down ritual.",
-    weight: "48g (24 bags x 2g)",
+    weight: "60g (24 sachets x 2.5g)",
     servings: 24,
     certifications: ["BMQ Organic certified", "JAS Certified", "India Organic"],
     inStock: true,
     featured: true,
     sizes: [
-      { pieces: 12, inStock: false, price: 210 },
-      { pieces: 24, inStock: true, price: 378 }
+      { pieces: 24, inStock: true, price: 499 }
     ]
   },
   {

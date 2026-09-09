@@ -10,8 +10,8 @@ import FaqBot from '../ui/FaqBot';
 
 export default function Layout({ 
   children, 
-  title = 'Amata | The Art of Moroheiya', 
-  description = 'Amata — premium Moroheiya wellness teas bridging Ayurveda and Japanese tea culture.', 
+  title = 'Amata | Premium Moroheiya Tea', 
+  description = 'Amata — Premium Organic Moroheiya Prebiotic Tea.', 
   navTheme, 
   hideFooter,
   ogImage = '/images/white-logo.png',

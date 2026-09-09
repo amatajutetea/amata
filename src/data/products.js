@@ -7,18 +7,19 @@ const products = [
     slug: "ginger-moroheiya-infusion",
     name: "Ginger Moroheiya Infusion",
     nameJp: "生姜モロヘイヤ茶",
-    price: 499,
+    price: 455,
     currency: "INR",
     primaryImage: "/images/products/ginger/ginger.jpg",
-    hoverImage: "/images/products/ginger/2.jpeg",
+    hoverImage: "/images/products/ginger/ginger_info.jpg",
     images: [
       "/images/products/ginger/ginger.jpg",
-      "/images/products/ginger/2.jpeg"
+      "/images/products/ginger/ginger_info.jpg",
+      "/images/products/moroheiya_info.jpg"
     ],
     description:
-      "A warming blend of hand-picked Moroheiya leaves infused with organic ginger root. Specially designed to balance the gut-brain axis, stimulate digestion, and provide a comforting, spicy finish.",
+      "A warming blend of organic Moroheiya leaves infused with ginger root for gut-brain balance.",
     longDescription:
-      "Our Ginger Moroheiya Infusion is crafted from the youngest Moroheiya leaves, shade-grown in Bengal and processed using traditional Japanese steaming techniques. The addition of organic ginger root creates a warming synergy that stimulates digestive fire (Agni), reduces system-wide inflammation, and balances the gut-brain axis. With an abundant concentration of prebiotic polysaccharides, it provides caffeine-free sustained vitality and deep inner peace.",
+      "Our Ginger Moroheiya Infusion is crafted from young Moroheiya leaves and organic ginger root. Stimulates digestion, reduces inflammation, and balances the gut-brain axis with caffeine-free prebiotic vitality.",
     ingredients: [
       "Hand-picked organic Moroheiya leaves",
       "Organic sliced ginger root",
@@ -38,7 +39,7 @@ const products = [
     inStock: true,
     featured: true,
     sizes: [
-      { pieces: 24, inStock: true, price: 499 }
+      { pieces: 24, inStock: true, price: 455 }
     ]
   },
   {
@@ -46,18 +47,19 @@ const products = [
     slug: "elaichi-moroheiya-infusion",
     name: "Elaichi Moroheiya Infusion",
     nameJp: "エライチモロヘイヤ茶",
-    price: 499,
+    price: 455,
     currency: "INR",
     primaryImage: "/images/products/elaichi/elaichi.jpg",
-    hoverImage: "/images/products/elaichi/2.jpeg",
+    hoverImage: "/images/products/elaichi/elaichi_info.jpg",
     images: [
       "/images/products/elaichi/elaichi.jpg",
-      "/images/products/elaichi/2.jpeg"
+      "/images/products/elaichi/elaichi_info.jpg",
+      "/images/products/moroheiya_info.jpg"
     ],
     description:
-      "Our signature Moroheiya infusion base enhanced with aromatic Kerala green elaichi. A fragrant, soothing brew that fosters gut-brain harmony, balances doshas, and refreshes the senses.",
+      "Our signature Moroheiya base enhanced with aromatic Kerala green elaichi for gut-brain harmony.",
     longDescription:
-      "The Elaichi Moroheiya Infusion marries the earthy depth and rich prebiotic fibers of Moroheiya with the ethereal fragrance of pure Kerala green elaichi (cardamom). This premium blend is meticulously formulated to nurture your gut microbiome, directly supporting vagus nerve stimulation for a calm, centered mind. It balances Vata and Pitta doshas while offering a naturally sweet, aromatic experience.",
+      "The Elaichi Moroheiya Infusion marries prebiotic Moroheiya leaves with pure Kerala green elaichi pods. Formulated to nurture your gut microbiome and support vagus nerve health for a calm, centered mind.",
     ingredients: [
       "Hand-picked organic Moroheiya leaves",
       "Kerala green elaichi pods (cardamom)",
@@ -77,7 +79,7 @@ const products = [
     inStock: true,
     featured: true,
     sizes: [
-      { pieces: 24, inStock: true, price: 499 }
+      { pieces: 24, inStock: true, price: 455 }
     ]
   },
   {

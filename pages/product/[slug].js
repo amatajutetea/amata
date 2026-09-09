@@ -84,7 +84,7 @@ export default function ProductPage({ product }) {
     "offers": {
       "@type": "Offer",
       "url": `https://amatajutetea.com/product/${product.slug}`,
-      "priceCurrency": product.currency || "USD",
+      "priceCurrency": product.currency || "INR",
       "price": currentPrice,
       "itemCondition": "https://schema.org/NewCondition",
       "availability": isAvailable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"

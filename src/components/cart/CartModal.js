@@ -39,7 +39,7 @@ export default function CartModal() {
                 <img src={item.primaryImage} alt={item.name} className={styles.itemImg} />
                 <div className={styles.itemInfo}>
                   <div className={`serif ${styles.itemTitle}`}>{item.name}</div>
-                  <div className={styles.itemPrice}>${item.price}</div>
+                  <div className={styles.itemPrice}>₹{item.price}</div>
                   <div className={styles.qtyRow}>
                     <button onClick={() => updateQty(item.id, item.qty - 1)} aria-label="Decrease quantity">
                       <Minus size={14} />

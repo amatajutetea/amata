@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import * as fpixel from '../lib/fpixel';
 
 const CartContext = createContext(null);
 
@@ -81,6 +82,15 @@ export function CartProvider({ children }) {
       }
       return [...prev, { ...product, qty: 1 }];
     });
+
+    // Fire Meta Pixel AddToCart Event
+    fpixel.event('AddToCart', {
+      content_name: product.name,
+      content_ids: [product.id],
+      value: product.price || 455,
+      currency: 'INR',
+    });
+
     setIsOpen(true);
   }, []);
 

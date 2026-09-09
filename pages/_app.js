@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { CartProvider } from '../src/context/CartContext';
+import MetaPixel from '../src/components/analytics/MetaPixel';
+import useMetaEngagement from '../src/hooks/useMetaEngagement';
+import * as fpixel from '../src/lib/fpixel';
 import '../src/styles/globals.css';
 
 function SmoothScroll() {
@@ -87,6 +90,9 @@ function SmoothScroll() {
     const handleRouteChange = () => {
       // Instantly scroll back up
       window.scrollTo(0, 0);
+
+      // Track Meta Pixel pageview on route change
+      fpixel.pageview();
 
       // Delay trigger refresh to let new DOM hydrate & render
       setTimeout(async () => {
@@ -202,8 +208,11 @@ function SplitTextInit() {
 }
 
 export default function App({ Component, pageProps }) {
+  useMetaEngagement();
+
   return (
     <CartProvider>
+      <MetaPixel />
       <SmoothScroll />
       <SplitTextInit />
       <Component {...pageProps} />

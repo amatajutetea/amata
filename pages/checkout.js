@@ -7,6 +7,7 @@ import styles from '../src/styles/checkout.module.css';
 import { auth, db } from '../src/lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import * as fpixel from '../src/lib/fpixel';
 
 export default function CheckoutPage() {
   const { items, total, clearCart } = useCart();
@@ -14,6 +15,17 @@ export default function CheckoutPage() {
   const [placedOrderInfo, setPlacedOrderInfo] = useState(null);
   const [user, setUser] = useState(null);
   const [pincodeStatus, setPincodeStatus] = useState(null);
+
+  // Track InitiateCheckout Meta Event when checkout loads with items
+  useEffect(() => {
+    if (items.length > 0) {
+      fpixel.event('InitiateCheckout', {
+        num_items: items.length,
+        value: total,
+        currency: 'INR',
+      });
+    }
+  }, [items.length]);
 
   const [form, setForm] = useState({
     name: '',
@@ -177,6 +189,13 @@ export default function CheckoutPage() {
               const verifyData = await verifyRes.json();
 
               if (verifyRes.ok && verifyData.success) {
+                // Track Meta Pixel Purchase Event
+                fpixel.event('Purchase', {
+                  value: data.amount / 100,
+                  currency: 'INR',
+                  order_id: data.orderId,
+                });
+
                 setPlacedOrderInfo({
                   orderId: data.orderId,
                   delhiveryAwb: verifyData.delhiveryAwb,

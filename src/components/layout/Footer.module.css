@@ -35,9 +35,9 @@
 .col ul li a {
   font-size: 1.2rem;
   font-family: var(--font-serif);
-  transition: color 0.3s, letter-spacing 0.4s;
+  transition: color 0.3s, font-weight 0.2s;
 }
-.col ul li a:hover { color: var(--c-white); letter-spacing: 3px; }
+.col ul li a:hover { color: var(--c-white); font-weight: 600; }
 
 .emailForm {
   display: flex;

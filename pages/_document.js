@@ -31,20 +31,6 @@ export default function Document() {
             }}
           />
         )}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              function googleTranslateElementInit() {
-                new google.translate.TranslateElement({
-                  pageLanguage: 'en',
-                  includedLanguages: 'en,ja',
-                  autoDisplay: false
-                }, 'google_translate_element');
-              }
-            `,
-          }}
-        />
-        <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
       </Head>
       <body>
         {FB_PIXEL_ID && (
@@ -58,7 +44,6 @@ export default function Document() {
             />
           </noscript>
         )}
-        <div id="google_translate_element" style={{ display: 'none' }}></div>
         <Main />
         <NextScript />
       </body>

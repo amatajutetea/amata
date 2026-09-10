@@ -47,22 +47,16 @@ export default function Nav({ theme = 'auto' }) {
 
         {/* Desktop links */}
         <div className={styles.links}>
-          <div className={styles.controls}>
-            <select className={styles.switcher} value={lang} onChange={(e) => setLang(e.target.value)} aria-label="Language">
-              <option value="EN">EN</option>
-              <option value="JP">JP</option>
-            </select>
-          </div>
-          <Link href="/learn" className={styles.link}>{lang === 'JP' ? '学ぶ' : 'Learn'}</Link>
-          <Link href="/journal" className={styles.link}>{lang === 'JP' ? 'ジャーナル' : 'Journal'}</Link>
-          <Link href="/track" className={styles.link}>{lang === 'JP' ? '追跡' : 'Track Order'}</Link>
+          <Link href="/learn" className={styles.link}>Learn</Link>
+          <Link href="/journal" className={styles.link}>Journal</Link>
+          <Link href="/track" className={styles.link}>Track Order</Link>
 
           <button
             className={styles.link}
             onClick={() => setAuthModalOpen(true)}
             aria-label="Account Login"
           >
-            {user ? (lang === 'JP' ? 'プロフィール' : 'Profile') : (lang === 'JP' ? 'ログイン' : 'Login')}
+            {user ? 'Profile' : 'Login'}
           </button>
 
           <a

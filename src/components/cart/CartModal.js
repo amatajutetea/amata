@@ -64,14 +64,25 @@ export default function CartModal() {
             <span className="serif">₹{total.toFixed(2)}</span>
           </div>
 
-          <Link
-            href="/checkout"
-            className="amata-btn"
-            onClick={() => setIsOpen(false)}
-            style={{ width: '100%', display: 'block', textAlign: 'center', padding: '1rem', marginBottom: '0.8rem' }}
-          >
-            Proceed to Direct Checkout
-          </Link>
+          {items.length > 0 ? (
+            <Link
+              href="/checkout"
+              className="amata-btn"
+              onClick={() => setIsOpen(false)}
+              style={{ width: '100%', display: 'block', textAlign: 'center', padding: '1rem', marginBottom: '0.8rem' }}
+            >
+              Proceed to Direct Checkout
+            </Link>
+          ) : (
+            <button
+              className="amata-btn"
+              disabled
+              style={{ width: '100%', display: 'block', textAlign: 'center', padding: '1rem', marginBottom: '0.8rem', opacity: 0.4, cursor: 'not-allowed' }}
+              title="Add items to satchel bag to checkout"
+            >
+              Proceed to Direct Checkout
+            </button>
+          )}
 
           <a
             href="https://amazon.in/AMATA-Jute-Leaf-Tea-ANTIOXIDANT/dp/B0FC6TVHFC"

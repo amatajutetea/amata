@@ -212,7 +212,6 @@ export default function App({ Component, pageProps }) {
 
   return (
     <CartProvider>
-      <MetaPixel />
       <SmoothScroll />
       <SplitTextInit />
       <Component {...pageProps} />

@@ -1,4 +1,4 @@
-export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || '943127708809965';
+export const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
 // Track pageviews on route change
 export const pageview = () => {

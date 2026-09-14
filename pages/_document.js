@@ -1,6 +1,6 @@
 import { Html, Head, Main, NextScript } from 'next/document';
 
-const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || '943127708809965';
+const FB_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
 export default function Document() {
   return (

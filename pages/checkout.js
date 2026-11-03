@@ -135,14 +135,19 @@ export default function CheckoutPage() {
     try {
       await saveProfile();
 
-      // 1. Create order on server
+      // 1. Create order on server with verified auth token if logged in
+      const token = user ? await user.getIdToken() : null;
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const res = await fetch('/api/payment/create-order', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           items,
           address: form,
-          uid: user?.uid || 'guest',
         }),
       });
 

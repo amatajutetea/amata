@@ -34,15 +34,21 @@ export default function AuthModal({ isOpen, onClose, user }) {
   }, [isOpen]);
 
   useEffect(() => {
-    if (isOpen && user?.uid) {
-      fetchUserOrders(user.uid);
+    if (isOpen && user) {
+      fetchUserOrders();
     }
-  }, [isOpen, user?.uid]);
+  }, [isOpen, user]);
 
-  async function fetchUserOrders(uid) {
+  async function fetchUserOrders() {
+    if (!user) return;
     setOrdersLoading(true);
     try {
-      const res = await fetch(`/api/user/orders?uid=${encodeURIComponent(uid)}`);
+      const token = await user.getIdToken();
+      const res = await fetch('/api/user/orders', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await res.json();
       if (res.ok && data.success) {
         setOrders(data.orders || []);

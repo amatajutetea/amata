@@ -1,19 +1,42 @@
-import { adminDb } from '../../../src/lib/firebase-admin';
+import { adminAuth, adminDb } from '../../../src/lib/firebase-admin';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { uid } = req.query;
-  if (!uid) return res.status(400).json({ error: 'User ID is required' });
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized: Authentication token is required' });
+  }
+
+  const idToken = authHeader.split('Bearer ')[1];
+  let authenticatedUid = null;
+
+  try {
+    if (adminAuth) {
+      const decodedToken = await adminAuth.verifyIdToken(idToken);
+      authenticatedUid = decodedToken.uid;
+    } else {
+      // In development environments without Firebase admin credentials, reject or require valid session
+      console.warn('[orders API]: adminAuth is not configured on this instance');
+      return res.status(503).json({ error: 'Authentication service unavailable' });
+    }
+  } catch (err) {
+    console.warn('[orders API token error]:', err.message);
+    return res.status(401).json({ error: 'Invalid or expired session token' });
+  }
+
+  if (!authenticatedUid) {
+    return res.status(401).json({ error: 'Could not resolve user identity' });
+  }
 
   const orders = [];
 
-  // 1. Try fetching from Firestore safely
+  // Fetch orders strictly owned by the authenticated UID
   try {
     if (adminDb && typeof adminDb.collection === 'function') {
       const snapshot = await adminDb
         .collection('orders')
-        .where('uid', '==', uid)
+        .where('uid', '==', authenticatedUid)
         .get();
 
       snapshot.forEach((doc) => {
@@ -21,14 +44,15 @@ export default async function handler(req, res) {
       });
     }
   } catch (err) {
-    console.warn('[Firestore user orders warning]:', err.message);
+    console.error('[Firestore user orders error]:', err.message);
+    return res.status(500).json({ error: 'Failed to retrieve orders from database' });
   }
 
-  // 2. Fallback to memory store if dev mode
+  // Fallback to memory store if in dev mode
   try {
     if (global._mockOrders) {
-      for (const [id, orderData] of global._mockOrders.entries()) {
-        if (orderData.uid === uid || uid === 'guest') {
+      for (const [, orderData] of global._mockOrders.entries()) {
+        if (orderData.uid === authenticatedUid) {
           if (!orders.some((o) => o.orderId === orderData.orderId)) {
             orders.push(orderData);
           }
@@ -36,7 +60,7 @@ export default async function handler(req, res) {
       }
     }
   } catch (err) {
-    console.warn('[Memory store orders warning]:', err.message);
+    console.warn('[Memory store orders notice]:', err.message);
   }
 
   // Sort newest first

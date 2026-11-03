@@ -1,11 +1,12 @@
+import crypto from 'crypto';
 import Razorpay from 'razorpay';
-import { adminDb } from '../../../src/lib/firebase-admin';
+import { adminAuth, adminDb } from '../../../src/lib/firebase-admin';
 import productsData from '../../../src/data/products';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { items, address, uid } = req.body;
+  const { items, address } = req.body;
 
   if (!items || !Array.isArray(items) || items.length === 0) {
     return res.status(400).json({ error: 'Cart items are required' });
@@ -13,6 +14,21 @@ export default async function handler(req, res) {
 
   if (!address || !address.name || !address.phone || !address.address || !address.pincode) {
     return res.status(400).json({ error: 'Complete delivery address is required' });
+  }
+
+  // Authoritative UID derivation: verify Firebase token if present, else fallback to 'guest'
+  let authoritativeUid = 'guest';
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split('Bearer ')[1];
+    try {
+      if (adminAuth) {
+        const decodedToken = await adminAuth.verifyIdToken(token);
+        authoritativeUid = decodedToken.uid;
+      }
+    } catch (authErr) {
+      console.warn('[create-order auth token notice]: Invalid token supplied, proceeding as guest:', authErr.message);
+    }
   }
 
   // Calculate authoritative order total server-side to prevent price tampering
@@ -58,7 +74,9 @@ export default async function handler(req, res) {
   const rzp = new Razorpay({ key_id, key_secret });
 
   try {
-    const customOrderId = `AMT-${Date.now().toString().slice(-6)}`;
+    // Cryptographically secure random 8-character hex order ID (prevents sequential scanning)
+    const randomHex = crypto.randomBytes(4).toString('hex').toUpperCase();
+    const customOrderId = `AMT-${randomHex}`;
     const rzpAmountPaise = Math.round(calculatedTotal * 100);
 
     const rzpOrder = await rzp.orders.create({
@@ -74,7 +92,7 @@ export default async function handler(req, res) {
 
     const orderData = {
       orderId: customOrderId,
-      uid: uid || 'guest',
+      uid: authoritativeUid,
       amount: calculatedTotal,
       items: verifiedItems,
       address,
@@ -108,11 +126,10 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error('[create-order error]:', err);
     if (err.statusCode === 401 || err?.error?.description === 'Authentication failed') {
-      return res.status(401).json({
-        error: `Razorpay Key Authentication Failed (${isProd ? 'Live Mode' : 'Test Mode'}). Key ID used: ${key_id}. Please check your Key Secret in Razorpay Dashboard -> Settings -> API Keys.`
+      return res.status(500).json({
+        error: 'Payment gateway authentication failed. Please contact administrator.'
       });
     }
-    return res.status(500).json({ error: err.message || 'Failed to create order' });
+    return res.status(500).json({ error: 'Failed to create order. Please try again.' });
   }
 }
-

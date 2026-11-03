@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import Razorpay from 'razorpay';
 import { adminDb } from '../../../src/lib/firebase-admin';
 
 export default async function handler(req, res) {
@@ -11,17 +12,18 @@ export default async function handler(req, res) {
   }
 
   const isProd = process.env.NEXT_PUBLIC_PRODUCTION === 'TRUE';
+  const key_id = isProd ? process.env.RAZORPAY_PROD_KEY_ID : process.env.RAZORPAY_TEST_KEY_ID;
   const key_secret = isProd ? process.env.RAZORPAY_PROD_KEY_SECRET : process.env.RAZORPAY_TEST_KEY_SECRET;
 
-  if (!key_secret) {
-    return res.status(500).json({ error: 'Razorpay secret key is not configured' });
+  if (!key_secret || !key_id) {
+    return res.status(500).json({ error: 'Payment gateway configuration error' });
   }
 
   try {
-    // 1. Verify HMAC SHA256 Signature using timing-safe comparison
+    // 1. Timing-safe HMAC SHA256 Signature verification
     const text = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expectedSignature = crypto
-      .createHmac('sha256', key_secret)
+      .createHmac('sha256', key_secret.trim())
       .update(text)
       .digest('hex');
 
@@ -32,15 +34,7 @@ export default async function handler(req, res) {
       signatureBuffer.length === expectedBuffer.length &&
       crypto.timingSafeEqual(signatureBuffer, expectedBuffer);
 
-    if (!isValidSignature) {
-      await adminDb.collection('orders').doc(orderId).update({
-        status: 'payment_failed',
-        updatedAt: new Date().toISOString(),
-      });
-      return res.status(400).json({ success: false, error: 'Invalid payment signature' });
-    }
-
-    // 2. Fetch order document & verify binding
+    // 2. Fetch order document & verify binding first (Prevents unauthenticated DoS / status tampering)
     let orderData = null;
     let orderRef = null;
 
@@ -69,7 +63,57 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Razorpay Order ID mismatch' });
     }
 
-    // 3. Delhivery Shipment Creation (India domestic surface shipping)
+    // If signature is invalid, only update order after confirming identity match
+    if (!isValidSignature) {
+      if (orderRef && orderData.status === 'pending') {
+        try {
+          await orderRef.update({
+            status: 'payment_failed',
+            updatedAt: new Date().toISOString(),
+          });
+        } catch (e) {
+          console.warn('[Firestore payment_failed update error]:', e.message);
+        }
+      }
+      return res.status(400).json({ success: false, error: 'Invalid payment signature' });
+    }
+
+    // 3. Idempotency Check: if already paid, return existing success state without re-dispatching shipment
+    if (orderData.status === 'paid') {
+      return res.status(200).json({
+        success: true,
+        message: 'Order already verified and processed',
+        orderId,
+        delhiveryAwb: orderData.delhiveryAwb || 'pending_dispatch',
+      });
+    }
+
+    if (orderData.status !== 'pending') {
+      return res.status(400).json({ error: `Cannot verify order with status: ${orderData.status}` });
+    }
+
+    // 4. Server-to-server check via Razorpay API (captured status & amount match)
+    try {
+      const rzp = new Razorpay({ key_id: key_id.trim(), key_secret: key_secret.trim() });
+      const paymentRecord = await rzp.payments.fetch(razorpay_payment_id);
+
+      if (paymentRecord.status !== 'captured' && paymentRecord.status !== 'authorized') {
+        return res.status(400).json({ error: `Payment not completed (status: ${paymentRecord.status})` });
+      }
+
+      const expectedPaise = Math.round(orderData.amount * 100);
+      if (paymentRecord.amount !== expectedPaise) {
+        return res.status(400).json({ error: 'Payment amount mismatch' });
+      }
+    } catch (rzpErr) {
+      console.warn('[Razorpay API verify notice]:', rzpErr.message || rzpErr);
+      // In test mode or network timeout with valid HMAC signature, proceed with caution
+      if (isProd) {
+        return res.status(502).json({ error: 'Unable to confirm payment status with gateway' });
+      }
+    }
+
+    // 5. Delhivery Shipment Creation (Executed strictly once upon pending -> paid transition)
     const delhiveryKey = isProd ? process.env.DELHIVERY_PROD_API_KEY : process.env.DELHIVERY_TEST_API_KEY;
     const delhiveryUrl = isProd
       ? 'https://track.delhivery.com/api/cmu/create.json'
@@ -139,7 +183,7 @@ export default async function handler(req, res) {
       }
     }
 
-    // 4. Update Order Document in Firestore / Memory
+    // 6. Update Order Document in Firestore / Memory atomically to 'paid'
     try {
       if (orderRef) {
         await orderRef.update({
@@ -176,4 +220,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Failed to verify payment' });
   }
 }
-

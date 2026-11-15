@@ -18,7 +18,8 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)',
+        // Apply security headers to page and API routes, avoiding large static assets & media
+        source: '/((?!_next/static|_next/image|images|videos|audio|favicon.ico).*)',
         headers: [
           {
             key: 'X-Frame-Options',
@@ -39,6 +40,16 @@ const nextConfig = {
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=31536000; includeSubDomains; preload',
+          },
+        ],
+      },
+      {
+        // Enable long-term edge caching for static media (videos, images, audio)
+        source: '/(images|videos|audio)/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

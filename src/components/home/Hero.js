@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import styles from './Hero.module.css';
 
@@ -27,9 +27,11 @@ function MandalaDecor({ className }) {
 export default function Hero() {
   const sectionRef = useRef(null);
   const titleRef   = useRef(null);
-  const imgRef     = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    setIsMobile(window.innerWidth <= 768);
+
     let ctx;
     async function init() {
       const { gsap }        = await import('gsap');
@@ -50,8 +52,6 @@ export default function Hero() {
           { opacity: 0, y: 40 },
           { opacity: 1, y: 0, duration: 1.5, ease: 'power3.out', delay: 0.2 }
         );
-        
-        // No right image mask to animate anymore
       }, sectionRef);
     }
     init();
@@ -60,16 +60,26 @@ export default function Hero() {
 
   return (
     <section ref={sectionRef} className={styles.hero}>
-      <video
-        src="/videos/hero.mp4"
-        className={styles.bgVideo}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        poster="/images/Corchorus_olitorius.jpg"
-      />
+      {isMobile ? (
+        <img
+          src="/images/Corchorus_olitorius_mobile.webp"
+          alt="Amata Moroheiya Herb"
+          className={styles.bgVideo}
+          loading="eager"
+          decoding="async"
+        />
+      ) : (
+        <video
+          src="/videos/hero.mp4"
+          className={styles.bgVideo}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="none"
+          poster="/images/Corchorus_olitorius.webp"
+        />
+      )}
       <div className={styles.overlay} />
 
       <MandalaDecor className={styles.mandala} />

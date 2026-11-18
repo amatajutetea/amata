@@ -8,10 +8,28 @@ export default function Document() {
       <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Preload critical LCP Hero image for instant mobile & desktop paint */}
+        <link
+          rel="preload"
+          as="image"
+          href="/images/Corchorus_olitorius_mobile.webp"
+          media="(max-width: 768px)"
+          type="image/webp"
+        />
+        <link
+          rel="preload"
+          as="image"
+          href="/images/Corchorus_olitorius.webp"
+          media="(min-width: 769px)"
+          type="image/webp"
+        />
+
         <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Shippori+Mincho:wght@400;500;600&family=Noto+Serif+JP:wght@300;400&display=swap"
           rel="stylesheet"
         />
+
         {/* Meta Pixel Base Code */}
         {FB_PIXEL_ID && (
           <script

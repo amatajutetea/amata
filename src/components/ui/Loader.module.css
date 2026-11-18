@@ -9,6 +9,14 @@
   justify-content: center;
   gap: 1.2rem;
   overflow: hidden;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+  pointer-events: all;
+}
+
+.loader.loaded {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .loaderText {
@@ -36,4 +44,11 @@
   display: inline-block;
   transform: translateY(100%);
   opacity: 0;
+}
+
+@media (max-width: 768px) {
+  /* On mobile, avoid blocking initial view */
+  .loader {
+    display: none !important;
+  }
 }

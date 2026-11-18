@@ -10,6 +10,11 @@ function SmoothScroll() {
   const router = useRouter();
 
   useEffect(() => {
+    // Disable Lenis smooth scroll on mobile / touch devices to retain 100% native 60/120Hz GPU momentum scrolling
+    const isTouchOrMobile = typeof window !== 'undefined' && 
+      (window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches);
+    if (isTouchOrMobile) return;
+
     let lenis;
     let isActive = true;
     let tickerCallback;
@@ -87,19 +92,20 @@ function SmoothScroll() {
   }, []);
 
   useEffect(() => {
-    const handleRouteChange = () => {
-      // Instantly scroll back up
-      window.scrollTo(0, 0);
+    const isTouchOrMobile = typeof window !== 'undefined' && 
+      (window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches);
 
-      // Track Meta Pixel pageview on route change
+    const handleRouteChange = () => {
+      window.scrollTo(0, 0);
       fpixel.pageview();
 
-      // Delay trigger refresh to let new DOM hydrate & render
-      setTimeout(async () => {
-        const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-        ScrollTrigger.refresh();
-        window.lenis?.resize();
-      }, 400);
+      if (!isTouchOrMobile) {
+        setTimeout(async () => {
+          const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+          ScrollTrigger.refresh();
+          window.lenis?.resize();
+        }, 400);
+      }
     };
 
     router.events.on('routeChangeComplete', handleRouteChange);
@@ -115,6 +121,11 @@ function SplitTextInit() {
   const router = useRouter();
 
   useEffect(() => {
+    // Skip heavy DOM text node splitting on mobile to prevent layout shifts & main-thread blocking
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      return;
+    }
+
     let ctx;
     let isActive = true;
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { MusicNotes, MusicNotesSimple } from '@phosphor-icons/react';
 import styles from './BgmToggle.module.css';
 
@@ -7,17 +7,23 @@ export default function BgmToggle() {
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
-    audioRef.current = new Audio('/audio/bgm.mp3');
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.4;
     return () => {
-      audioRef.current?.pause();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
   }, []);
 
   function toggle() {
+    // Lazily instantiate audio on user demand to avoid downloading 3.5MB on initial load
+    if (!audioRef.current) {
+      audioRef.current = new Audio('/audio/bgm.mp3');
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.4;
+    }
+
     const audio = audioRef.current;
-    if (!audio) return;
     if (playing) {
       audio.pause();
       setPlaying(false);
